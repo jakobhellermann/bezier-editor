@@ -169,8 +169,10 @@ function render() {
 
     for (let i = 0; i < curves.length; i++) {
         let curve = curves[i];
-        ctx.fillStyle = "#000000";
-        for (const point of curve) drawPoint(point);
+        if (options.controlPoints) {
+            ctx.fillStyle = "#000000";
+            for (const point of curve) drawPoint(point);
+        }
 
         if (options.colorCurves) ctx.strokeStyle = distinctColors[i % distinctColors.length];
         else ctx.strokeStyle = "#000";
