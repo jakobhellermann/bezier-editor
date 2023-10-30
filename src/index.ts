@@ -63,12 +63,14 @@ function onClickHandler(event: MouseEvent) {
     render();
 }
 
+let distinctColors = ["#191970", "#006400", "#ff0000", "#ffd700", "#00ff00", "#00ffff", "#ff00ff", "#ffb6c1"];
 function render() {
     clear();
     for (let i = 0; i < curves.length; i++) {
         let curve = curves[i];
         for (const point of curve) drawPoint(point);
 
+        ctx.strokeStyle = distinctColors[i % distinctColors.length];
         drawBezierCasteljau(curve);
     }
 }
