@@ -58,7 +58,8 @@ function onClickHandler(event: MouseEvent) {
         }
     }
 
-    curves[curves.length - 1].push({ x: event.clientX, y: event.clientY });
+    let rect = canvas.getBoundingClientRect();
+    curves[curves.length - 1].push({ x: event.clientX - rect.left, y: event.clientY - rect.top });
 
     render();
 }
