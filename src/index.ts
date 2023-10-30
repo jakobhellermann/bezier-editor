@@ -5,6 +5,9 @@ if (ctx === null) throw new Error("could not get canvas context");
 type Point = { x: number; y: number; };
 type BezierCurve = Point[];
 
+// global state:
+let curves: BezierCurve[] = [[]];
+
 function clear() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
@@ -48,26 +51,25 @@ function drawBezierCasteljau(points: BezierCurve, depth = 5) {
 canvas.addEventListener("click", onClickHandler);
 
 function onClickHandler(event: MouseEvent) {
-    curve.push({ x: event.clientX, y: event.clientY });
+    // begin new curve
+    if (event.shiftKey) {
+        if (curves[curves.length - 1].length > 0) {
+            curves.push([]);
+        }
+    }
+
+    curves[curves.length - 1].push({ x: event.clientX, y: event.clientY });
+
     render();
 }
 
-
-let curve: BezierCurve = [];
-
 function render() {
     clear();
+    for (let i = 0; i < curves.length; i++) {
+        let curve = curves[i];
+        for (const point of curve) drawPoint(point);
 
-    drawBezierCasteljau(curve);
-    for (let i = 0; i < curve.length; i++) {
-        drawPoint(curve[i]);
-
-        /*if (i != points.length - 1) {
-            let from = points[i];
-            let to = points[i + 1];
-            drawLine(from, to);
-        }*/
+        drawBezierCasteljau(curve);
     }
-
 }
 
