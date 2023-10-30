@@ -14,8 +14,12 @@ if (ctx === null) throw new Error("could not get canvas context");
 type Point = { x: number; y: number; };
 type BezierCurve = Point[];
 
+
+
+let initialCurve = [{ "x": 92, "y": 298 }, { "x": 163, "y": 130 }, { "x": 324, "y": 114 }, { "x": 435, "y": 291 }];
+
 // global state:
-let curves: BezierCurve[] = [[]];
+let curves: BezierCurve[] = [initialCurve];
 let options = {
     depth: optionDepth.valueAsNumber,
     colorCurves: optionColorCurves.checked,
@@ -113,3 +117,4 @@ function render() {
     }
 }
 
+render();
