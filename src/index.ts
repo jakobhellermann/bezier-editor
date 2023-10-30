@@ -1,4 +1,8 @@
-let canvas = document.getElementById("canvas")! as HTMLCanvasElement;
+let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+let optionDepth = document.getElementById("optionDepth") as HTMLInputElement;
+let optionColorCurves = document.getElementById("optionColorCurves") as HTMLInputElement;
+let optionControlPoints = document.getElementById("optionControlPoints") as HTMLInputElement;
+
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 if (ctx === null) throw new Error("could not get canvas context");
 

@@ -1,3 +1,16 @@
+:root {
+    font-family: Cantarell, Arial, Helvetica, sans-serif
+}
+
+
+#main {
+    display: flex;
+}
+
+#controls {
+    margin-left: 1rem;
+}
+
 #canvas {
     border: 1px solid black;
 }

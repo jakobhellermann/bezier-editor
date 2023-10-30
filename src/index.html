@@ -11,7 +11,32 @@
 </head>
 
 <body>
-    <canvas id="canvas" width="500px" height="500px" oncontextmenu="return false"></canvas>
+    <h1>Bezier Curve Explorer</h1>
+    <p>some more text below</p>
+
+    <div id="main">
+
+        <canvas id="canvas" width="500px" height="500px" oncontextmenu="return false"></canvas>
+
+        <div id="controls">
+            <label>
+                <input type="checkbox" id="optionColorCurves">
+                Color Curves
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="optionControlPoints">
+                Show controls
+            </label>
+            <br>
+            <label style="display: flex; align-items: center;">
+                <input type="range" min="1" max="7" value="6" id="optionDepth"
+                    oninput="this.nextElementSibling.value = this.value;">
+                Max depth:&nbsp;
+                <output>7</output>
+            </label>
+        </div>
+    </div>
 </body>
 
 </html>
