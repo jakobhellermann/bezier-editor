@@ -20,20 +20,19 @@
 
         <div id="controls">
             <label>
-                <input type="checkbox" id="optionColorCurves">
+                <input type="checkbox" id="optionColorCurves" checked>
                 Color Curves
             </label>
             <br>
             <label>
-                <input type="checkbox" id="optionControlPoints">
-                Show controls
+                <input type="checkbox" id="optionControlPoints" checked>
+                Show control points
             </label>
             <br>
             <label style="display: flex; align-items: center;">
-                <input type="range" min="1" max="7" value="6" id="optionDepth"
-                    oninput="this.nextElementSibling.value = this.value;">
+                <input type="range" min="1" max="10" value="6" id="optionDepth">
                 Max depth:&nbsp;
-                <output>7</output>
+                <output id="optionDepthCurrent"></output>
             </label>
         </div>
     </div>

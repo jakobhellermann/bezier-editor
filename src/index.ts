@@ -1,7 +1,12 @@
 let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+
 let optionDepth = document.getElementById("optionDepth") as HTMLInputElement;
+let optionDepthCurrent = document.getElementById("optionDepthCurrent") as HTMLOutputElement;
 let optionColorCurves = document.getElementById("optionColorCurves") as HTMLInputElement;
 let optionControlPoints = document.getElementById("optionControlPoints") as HTMLInputElement;
+
+
+optionDepthCurrent.value = optionDepth.value;
 
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 if (ctx === null) throw new Error("could not get canvas context");
@@ -11,7 +16,35 @@ type BezierCurve = Point[];
 
 // global state:
 let curves: BezierCurve[] = [[]];
+let options = {
+    depth: optionDepth.valueAsNumber,
+    colorCurves: optionColorCurves.checked,
+    controlPoints: optionControlPoints.checked,
+};
 
+// event listeners
+canvas.addEventListener("click", canvasClick);
+
+optionColorCurves.addEventListener("change", () => {
+    options.colorCurves = optionColorCurves.checked;
+    render();
+});
+optionControlPoints.addEventListener("change", () => {
+    options.controlPoints = optionControlPoints.checked;
+    render();
+});
+optionColorCurves.addEventListener("change", () => {
+    options.colorCurves = optionColorCurves.checked;
+    render();
+});
+optionDepth.addEventListener("input", () => {
+    optionDepthCurrent.value = optionDepth.value;
+    options.depth = optionDepth.valueAsNumber;
+    render();
+});
+optionDepthCurrent.value = optionDepth.value;
+
+// drawing utils
 function clear() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
@@ -52,9 +85,8 @@ function drawBezierCasteljau(points: BezierCurve, depth = 5) {
 }
 
 
-canvas.addEventListener("click", onClickHandler);
 
-function onClickHandler(event: MouseEvent) {
+function canvasClick(event: MouseEvent) {
     // begin new curve
     if (event.shiftKey) {
         if (curves[curves.length - 1].length > 0) {
@@ -75,8 +107,9 @@ function render() {
         let curve = curves[i];
         for (const point of curve) drawPoint(point);
 
-        ctx.strokeStyle = distinctColors[i % distinctColors.length];
-        drawBezierCasteljau(curve);
+        if (options.colorCurves) ctx.strokeStyle = distinctColors[i % distinctColors.length];
+        else ctx.strokeStyle = "#000";
+        drawBezierCasteljau(curve, options.depth);
     }
 }
 
