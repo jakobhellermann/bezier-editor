@@ -29,11 +29,23 @@
                 Show control points
             </label>
             <br>
+            <label>
+                <input type="checkbox" id="optionShowConstruction">
+                Show construction
+            </label>
+            <br>
+            <label style="display: flex; align-items: center;">
+                <input type="range" min="0" max="1" value="0.5" step="0.01" id="optionConstructionParameter">
+                t:&nbsp;
+                <output id="optionConstructionParameterCurrent"></output>
+            </label>
             <label style="display: flex; align-items: center;">
                 <input type="range" min="1" max="10" value="6" id="optionDepth">
                 Max depth:&nbsp;
                 <output id="optionDepthCurrent"></output>
             </label>
+
+            <button id="buttonClear">Clear</button>
         </div>
     </div>
 </body>
