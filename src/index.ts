@@ -153,7 +153,9 @@ function canvasClick(event: MouseEvent) {
     // begin new curve
     if (event.shiftKey) {
         if (curves[curves.length - 1].length > 0) {
-            curves.push([]);
+            let lastCurve = curves[curves.length - 1];
+            let lastPoint = lastCurve[lastCurve.length - 1];
+            curves.push([{ x: lastPoint.x, y: lastPoint.y }]);
         }
     }
 
