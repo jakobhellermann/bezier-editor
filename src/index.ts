@@ -58,6 +58,8 @@ optionShowConstruction.addEventListener("change", () => {
     optionConstructionParameter.disabled = !options.showConstruction;
     render();
 });
+
+optionConstructionParameter.disabled = !options.showConstruction;
 optionConstructionParameter.addEventListener("input", () => {
     optionConstructionParameterCurrent.value = optionConstructionParameter.value;
     options.constructionParameter = optionConstructionParameter.valueAsNumber;
