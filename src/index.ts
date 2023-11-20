@@ -4,12 +4,14 @@ let buttonClear = document.getElementById("buttonClear") as HTMLButtonElement;
 let optionDepth = document.getElementById("optionDepth") as HTMLInputElement;
 let optionDepthCurrent = document.getElementById("optionDepthCurrent") as HTMLOutputElement;
 let optionColorCurves = document.getElementById("optionColorCurves") as HTMLInputElement;
+let optionColorSegments = document.getElementById("optionColorSegments") as HTMLInputElement;
 let optionControlPoints = document.getElementById("optionControlPoints") as HTMLInputElement;
 let optionShowConstruction = document.getElementById("optionShowConstruction") as HTMLInputElement;
 let optionConstructionParameter = document.getElementById("optionConstructionParameter") as HTMLInputElement;
 let optionConstructionParameterCurrent = document.getElementById("optionConstructionParameterCurrent") as HTMLOutputElement;
-optionDepthCurrent.value = optionDepth.value;
-optionConstructionParameterCurrent.value = optionConstructionParameter.value;
+let optionMaximumDistance = document.getElementById("optionMaximumDistance") as HTMLInputElement;
+let optionMaximumDistanceCurrent = document.getElementById("optionMaximumDistanceCurrent") as HTMLOutputElement;
+let optionStopCondition = document.getElementById("optionStopCondition") as HTMLSelectElement;
 
 let ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 if (ctx === null) throw new Error("could not get canvas context");
@@ -21,14 +23,22 @@ type BezierCurve = Point[];
 
 let initialCurve = [{ "x": 92, "y": 298 }, { "x": 163, "y": 130 }, { "x": 324, "y": 114 }, { "x": 435, "y": 291 }];
 
+enum StopCondition {
+    DEPTH = "DEPTH",
+    DISTANCE = "DISTANCE",
+}
+
 // global state:
 let curves: BezierCurve[] = [initialCurve];
 let options = {
     depth: optionDepth.valueAsNumber,
     colorCurves: optionColorCurves.checked,
+    colorSegments: optionColorSegments.checked,
     controlPoints: optionControlPoints.checked,
     showConstruction: optionShowConstruction.checked,
     constructionParameter: optionConstructionParameter.valueAsNumber,
+    maximumDistance: optionMaximumDistance.valueAsNumber,
+    stopCondition: optionStopCondition.value,
 };
 
 // event listeners
@@ -36,6 +46,10 @@ canvas.addEventListener("click", canvasClick);
 
 optionColorCurves.addEventListener("change", () => {
     options.colorCurves = optionColorCurves.checked;
+    render();
+});
+optionColorSegments.addEventListener("change", () => {
+    options.colorSegments = optionColorSegments.checked;
     render();
 });
 optionControlPoints.addEventListener("change", () => {
@@ -67,6 +81,22 @@ optionConstructionParameter.addEventListener("input", () => {
 });
 optionConstructionParameterCurrent.value = optionConstructionParameter.value;
 
+optionMaximumDistance.addEventListener("input", () => {
+    optionMaximumDistanceCurrent.value = optionMaximumDistance.value;
+    options.maximumDistance = optionMaximumDistance.valueAsNumber;
+    render();
+});
+optionMaximumDistanceCurrent.value = optionMaximumDistance.value;
+
+optionStopCondition.addEventListener("input", () => {
+    options.stopCondition = optionStopCondition.value;
+    optionMaximumDistance.disabled = options.stopCondition !== StopCondition.DISTANCE;
+    optionDepth.disabled = options.stopCondition !== StopCondition.DEPTH;
+    render();
+});
+optionMaximumDistance.disabled = options.stopCondition !== StopCondition.DISTANCE;
+optionDepth.disabled = options.stopCondition !== StopCondition.DEPTH;
+
 buttonClear.addEventListener("click", () => {
     curves = [[]];
     render();
@@ -77,7 +107,13 @@ function clear() {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
+let segmentIndex = 0;
 function drawLine(from: Point, to: Point) {
+    if (options.colorSegments) {
+        ctx.strokeStyle = distinctColors[segmentIndex % distinctColors.length];
+        segmentIndex += 1;
+    }
+
     ctx.beginPath();
     ctx.moveTo(from.x, from.y);
     ctx.lineTo(to.x, to.y);
@@ -114,7 +150,19 @@ function calculateIntermediates(points: Point[], t: number): Point[][] {
 function drawBezierCasteljau(points: BezierCurve, depth = 5) {
     if (points.length <= 1) return;
 
-    if (depth === 0) drawLine(points[0], points[points.length - 1]);
+    let shouldStop;
+    if (options.stopCondition === StopCondition.DEPTH) {
+        shouldStop = depth === 0;
+    } else if (options.stopCondition === StopCondition.DISTANCE) {
+        let start = points[0];
+        let end = points[points.length - 1];
+        let deltaX = end.x - start.x;
+        let deltaY = end.y - start.y;
+        let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        shouldStop = distance < options.maximumDistance;
+    }
+
+    if (shouldStop) drawLine(points[0], points[points.length - 1]);
     else {
         let intermediates = calculateIntermediates(points, 0.5);
 
@@ -136,7 +184,6 @@ function drawBezierConstruction(curve: BezierCurve) {
         let intermediate = intermediates[i];
 
         if (i > 0) {
-
             for (let point of intermediate) {
                 ctx.fillStyle = "#00f";
                 drawPoint(point);
@@ -169,6 +216,7 @@ function canvasClick(event: MouseEvent) {
 
 let distinctColors = ["#191970", "#006400", "#ff0000", "#00ff00", "#00ffff", "#ff00ff", "#ffb6c1"];
 function render() {
+    segmentIndex = 0;
     clear();
 
     for (let i = 0; i < curves.length; i++) {

@@ -20,12 +20,17 @@
 
         <div id="controls">
             <label>
-                <input type="checkbox" id="optionColorCurves" checked>
+                <input type="checkbox" id="optionColorCurves">
                 Color Curves
             </label>
             <br>
             <label>
-                <input type="checkbox" id="optionControlPoints" checked>
+                <input type="checkbox" id="optionColorSegments">
+                Color Invididual Segments
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="optionControlPoints">
                 Show control points
             </label>
             <br>
@@ -39,15 +44,30 @@
                 t:&nbsp;
                 <output id="optionConstructionParameterCurrent"></output>
             </label>
+
+            <hr>
+
+            <label>
+                Stop Condition
+                <select id="optionStopCondition">
+                    <option value="DEPTH">Max depth</option>
+                    <option value="DISTANCE" selected>Distance</option>
+                </select>
+            </label>
+
             <label style="display: flex; align-items: center;">
                 <input type="range" min="1" max="10" value="6" id="optionDepth">
                 Max depth:&nbsp;
                 <output id="optionDepthCurrent"></output>
             </label>
 
+            <label style="display: flex; align-items: center;">
+                <input type="range" min="1" max="200" value="5" id="optionMaximumDistance">
+                Minimum Distance:&nbsp;
+                <output id="optionMaximumDistanceCurrent"></output>
+            </label>
+
             <button id="buttonClear">Clear</button>
         </div>
     </div>
 </body>
-
-</html>
