@@ -178,7 +178,7 @@ function boundingBox(points: Point[]): Rect {
 
 function stopCondition(points: BezierCurve, depth: number): boolean {
     if (options.stopCondition === StopCondition.DEPTH) {
-        return depth === 0;
+        return depth === options.depth;
     } else if (options.stopCondition === StopCondition.DISTANCE) {
         let start = points[0];
         let end = points[points.length - 1];
@@ -201,7 +201,7 @@ function stopCondition(points: BezierCurve, depth: number): boolean {
 
 let nSegments = 0;
 
-function drawBezierCasteljau(points: BezierCurve, depth = 5) {
+function drawBezierCasteljau(points: BezierCurve, depth = 0) {
     if (points.length <= 1) return;
 
     if (options.showSubdividePoints) {
@@ -222,8 +222,8 @@ function drawBezierCasteljau(points: BezierCurve, depth = 5) {
     else {
         let intermediates = calculateIntermediates(points, 0.5);
 
-        drawBezierCasteljau(intermediates.map(points => points[0]), depth - 1);
-        drawBezierCasteljau(intermediates.map(points => points[points.length - 1]), depth - 1);
+        drawBezierCasteljau(intermediates.map(points => points[0]), depth + 1);
+        drawBezierCasteljau(intermediates.map(points => points[points.length - 1]), depth + 1);
     }
 }
 
@@ -287,7 +287,7 @@ function render() {
         else ctx.strokeStyle = "#000";
         ctx.lineWidth = 2;
 
-        drawBezierCasteljau(curve, options.depth);
+        drawBezierCasteljau(curve);
 
         if (options.showConstruction) {
             drawBezierConstruction(curve);
