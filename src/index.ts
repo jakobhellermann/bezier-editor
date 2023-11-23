@@ -30,7 +30,8 @@ let distance = (a: Point, b: Point): number => {
     return distance;
 };
 
-let initialCurve = [{ "x": 92, "y": 298 }, { "x": 163, "y": 130 }, { "x": 324, "y": 114 }, { "x": 435, "y": 291 }];
+// let initialCurves = [[{ "x": 92, "y": 298 }, { "x": 163, "y": 130 }, { "x": 324, "y": 114 }, { "x": 435, "y": 291 }]];
+let initialCurves = [[{ "x": 176, "y": 145 }, { "x": 256, "y": 141 }, { "x": 194, "y": 224 }, { "x": 254, "y": 222 }], [{ "x": 254, "y": 222 }, { "x": 314, "y": 220 }, { "x": 347, "y": 267 }, { "x": 348, "y": 371 }]];
 
 enum StopCondition {
     DEPTH = "DEPTH",
@@ -39,7 +40,7 @@ enum StopCondition {
 }
 
 // global state:
-let curves: BezierCurve[] = [initialCurve];
+let curves: BezierCurve[] = initialCurves;
 let options = {
     depth: optionDepth.valueAsNumber,
     colorCurves: optionColorCurves.checked,
@@ -113,6 +114,8 @@ optionMaximumDistance.disabled = options.stopCondition !== StopCondition.DISTANC
 optionDepth.disabled = options.stopCondition !== StopCondition.DEPTH;
 
 buttonClear.addEventListener("click", () => {
+    console.log(JSON.stringify(curves));
+
     curves = [[]];
     render();
 });
