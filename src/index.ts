@@ -307,10 +307,15 @@ function canvasClick(event: MouseEvent) {
 
     // begin new curve
     if (event.shiftKey) {
-        if (curves[curves.length - 1].length > 0) {
+        if (curves[curves.length - 1].length > 1) {
             let lastCurve = curves[curves.length - 1];
             let lastPoint = lastCurve[lastCurve.length - 1];
-            curves.push([{ x: lastPoint.x, y: lastPoint.y }]);
+
+            let lastControlPoint = lastCurve[lastCurve.length - 2];
+            let tangent = { x: lastPoint.x - lastControlPoint.x, y: lastPoint.y - lastControlPoint.y };
+            let newControlPoint = { x: lastPoint.x + tangent.x, y: lastPoint.y + tangent.y };
+
+            curves.push([lastPoint, newControlPoint]);
         }
     }
     curves[curves.length - 1].push(event2position(event));
