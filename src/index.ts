@@ -2,6 +2,7 @@ let canvas = document.getElementById("canvas") as HTMLCanvasElement;
 let buttonClear = document.getElementById("buttonClear") as HTMLButtonElement;
 
 let optionDepth = document.getElementById("optionDepth") as HTMLInputElement;
+let optionLockTangents = document.getElementById("optionLockTangents") as HTMLInputElement;
 let optionDepthCurrent = document.getElementById("optionDepthCurrent") as HTMLOutputElement;
 let optionColorCurves = document.getElementById("optionColorCurves") as HTMLInputElement;
 let optionColorSegments = document.getElementById("optionColorSegments") as HTMLInputElement;
@@ -51,11 +52,15 @@ let options = {
     showSubdividePoints: optionSubdividePoints.checked,
     maximumDistance: optionMaximumDistance.valueAsNumber,
     stopCondition: optionStopCondition.value,
+    lockTangents: optionLockTangents.checked,
 };
 
 // event listeners
 canvas.addEventListener("click", canvasClick);
 
+optionLockTangents.addEventListener("change", () => {
+    options.lockTangents = optionLockTangents.checked;
+});
 optionColorCurves.addEventListener("change", () => {
     options.colorCurves = optionColorCurves.checked;
     render();
@@ -269,15 +274,16 @@ let hoverPosition: Point | null = null;
 let hovered = (pos: Point) => hoverPosition ? distance(pos, hoverPosition) < 5 : false;;
 
 let dragging = false;
-let draggingPoint: Point | null = null;
+let draggingPoint: { curve: number, point: number; } | null = null;
 
 canvas.addEventListener("mousedown", (event) => {
     if (options.controlPoints) {
         for (let i = 0; i < curves.length; i++) {
             let curve = curves[i];
-            for (const point of curve) {
+            for (let j = 0; j < curve.length; j++) {
+                let point = curve[j];
                 if (hovered(point)) {
-                    draggingPoint = point;
+                    draggingPoint = { curve: i, point: j };
                     dragging = true;
                     return;
                 }
@@ -291,8 +297,32 @@ canvas.addEventListener("mousemove", (event: MouseEvent) => {
     hoverPosition = event2position(event);
 
     if (draggingPoint) {
-        draggingPoint.x = hoverPosition.x;
-        draggingPoint.y = hoverPosition.y;
+        let curve = curves[draggingPoint.curve];
+        let point = curve[draggingPoint.point];
+        point.x = hoverPosition.x;
+        point.y = hoverPosition.y;
+
+        if (options.lockTangents) {
+            if (draggingPoint.point === 1 && draggingPoint.curve > 0) {
+                let prevCurve = curves[draggingPoint.curve - 1];
+                if (prevCurve.length > 2) {
+                    let shared = prevCurve.at(-1)!;
+                    let prevControl = prevCurve.at(-2)!;
+                    let tangent = { x: shared.x - point.x, y: shared.y - point.y };
+                    prevControl.x = shared.x + tangent.x;
+                    prevControl.y = shared.y + tangent.y;
+                }
+            } else if (draggingPoint.point === curve.length - 2 && draggingPoint.curve < curves.length - 1) {
+                let nextCurve = curves[draggingPoint.curve + 1];
+                if (nextCurve.length > 2) {
+                    let shared = nextCurve[0];
+                    let nextControl = nextCurve[1];
+                    let tangent = { x: shared.x - point.x, y: shared.y - point.y };
+                    nextControl.x = shared.x + tangent.x;
+                    nextControl.y = shared.y + tangent.y;
+                }
+            }
+        }
     }
 
     render();
