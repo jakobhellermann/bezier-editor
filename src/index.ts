@@ -23,6 +23,12 @@ type Point = { x: number; y: number; };
 type BezierCurve = Point[];
 type Rect = { x: number; y: number; w: number; h: number; };
 
+let distance = (a: Point, b: Point): number => {
+    let deltaX = b.x - a.x;
+    let deltaY = b.y - a.y;
+    let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    return distance;
+};
 
 let initialCurve = [{ "x": 92, "y": 298 }, { "x": 163, "y": 130 }, { "x": 324, "y": 114 }, { "x": 435, "y": 291 }];
 
@@ -176,16 +182,14 @@ function boundingBox(points: Point[]): Rect {
     return { x: l, y: t, w: r - l, h: b - t };
 }
 
+
 function stopCondition(points: BezierCurve, depth: number): boolean {
     if (options.stopCondition === StopCondition.DEPTH) {
         return depth === options.depth;
     } else if (options.stopCondition === StopCondition.DISTANCE) {
         let start = points[0];
         let end = points[points.length - 1];
-        let deltaX = end.x - start.x;
-        let deltaY = end.y - start.y;
-        let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        return distance < options.maximumDistance;
+        return distance(start, end) < options.maximumDistance;
     } else if (options.stopCondition === StopCondition.BOUNDING_BOX) {
         let bb = boundingBox(points);
         if (false) drawBox(bb);
@@ -253,8 +257,54 @@ function drawBezierConstruction(curve: BezierCurve) {
 }
 
 
+let event2position = (event: MouseEvent): Point => {
+    let rect = canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+};
+
+let hoverPosition: Point | null = null;
+let hovered = (pos: Point) => hoverPosition ? distance(pos, hoverPosition) < 5 : false;;
+
+let dragging = false;
+let draggingPoint: Point | null = null;
+
+canvas.addEventListener("mousedown", (event) => {
+    if (options.controlPoints) {
+        for (let i = 0; i < curves.length; i++) {
+            let curve = curves[i];
+            for (const point of curve) {
+                if (hovered(point)) {
+                    draggingPoint = point;
+                    dragging = true;
+                    return;
+                }
+            }
+        }
+    }
+});
+
+
+canvas.addEventListener("mousemove", (event: MouseEvent) => {
+    hoverPosition = event2position(event);
+
+    if (draggingPoint) {
+        draggingPoint.x = hoverPosition.x;
+        draggingPoint.y = hoverPosition.y;
+    }
+
+    render();
+});
+canvas.addEventListener("mouseup", (event) => {
+    draggingPoint = null;
+});
+
 
 function canvasClick(event: MouseEvent) {
+    if (dragging) {
+        dragging = dragging && draggingPoint !== null;
+        return;
+    }
+
     // begin new curve
     if (event.shiftKey) {
         if (curves[curves.length - 1].length > 0) {
@@ -263,9 +313,7 @@ function canvasClick(event: MouseEvent) {
             curves.push([{ x: lastPoint.x, y: lastPoint.y }]);
         }
     }
-
-    let rect = canvas.getBoundingClientRect();
-    curves[curves.length - 1].push({ x: event.clientX - rect.left, y: event.clientY - rect.top });
+    curves[curves.length - 1].push(event2position(event));
 
     render();
 }
@@ -280,7 +328,9 @@ function render() {
         let curve = curves[i];
         if (options.controlPoints) {
             ctx.fillStyle = "#000000";
-            for (const point of curve) drawPoint(point);
+            for (const point of curve) {
+                drawPoint(point, hovered(point) ? 10 : 4);
+            }
         }
 
         if (options.colorCurves) ctx.strokeStyle = distinctColors[i % distinctColors.length];
