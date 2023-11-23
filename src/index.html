@@ -16,7 +16,7 @@
 
     <div id="main">
 
-        <canvas id="canvas" width="500px" height="500px" oncontextmenu="return false"></canvas>
+        <canvas id="canvas" width="500px" height="500px"></canvas>
 
         <div id="controls">
             <label>
@@ -44,6 +44,10 @@
                 t:&nbsp;
                 <output id="optionConstructionParameterCurrent"></output>
             </label>
+            <label>
+                <input type="checkbox" id="optionSubdividePoints">
+                Show subdivide points
+            </label>
 
             <hr>
 
@@ -51,7 +55,8 @@
                 Stop Condition
                 <select id="optionStopCondition">
                     <option value="DEPTH">Max depth</option>
-                    <option value="DISTANCE" selected>Distance</option>
+                    <option value="DISTANCE">Distance</option>
+                    <option value="BOUNDING_BOX" selected>Bounding Box</option>
                 </select>
             </label>
 
@@ -63,11 +68,13 @@
 
             <label style="display: flex; align-items: center;">
                 <input type="range" min="1" max="200" value="5" id="optionMaximumDistance">
-                Minimum Distance:&nbsp;
+                Maximum Distance:&nbsp;
                 <output id="optionMaximumDistanceCurrent"></output>
             </label>
 
             <button id="buttonClear">Clear</button>
+
+            <p># of segments: <output id="nSegments"></output></p>
         </div>
     </div>
 </body>
