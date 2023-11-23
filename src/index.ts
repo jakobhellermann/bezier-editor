@@ -333,8 +333,18 @@ function render() {
         let curve = curves[i];
         if (options.controlPoints) {
             ctx.fillStyle = "#000000";
-            for (const point of curve) {
+            for (let j = 0; j < curve.length; j++) {
+                let point = curve[j];
                 drawPoint(point, hovered(point) ? 10 : 4);
+            }
+
+            if (curve.length > 1) {
+                ctx.strokeStyle = "#999";
+                ctx.lineWidth = 0.5;
+                drawLine(curve[0], curve[1]);
+                if (curve.length > 2) {
+                    drawLine(curve[curve.length - 1], curve[curve.length - 2]);
+                }
             }
         }
 
