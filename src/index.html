@@ -15,20 +15,11 @@
     <p>some more text below</p>
 
     <div id="main">
-
-        <canvas id="canvas" width="500px" height="500px"></canvas>
-
+        <div id="canvasinfo">
+            <canvas id="canvas" width="500px" height="500px"></canvas>
+            <code># of segments: <output id="nSegments"></output></code>
+        </div>
         <div id="controls">
-            <label>
-                <input type="checkbox" id="optionColorCurves">
-                Color Curves
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionColorSegments">
-                Color Invididual Segments
-            </label>
-            <br>
             <label>
                 <input type="checkbox" id="optionControlPoints">
                 Show control points
@@ -44,9 +35,22 @@
                 t:&nbsp;
                 <output id="optionConstructionParameterCurrent"></output>
             </label>
+
+            <hr>
+
+            <label>
+                <input type="checkbox" id="optionColorCurves">
+                Color curve segments
+            </label>
+            <br>
+            <label>
+                <input type="checkbox" id="optionColorSegments">
+                Color subdivision segments
+            </label>
+            <br>
             <label>
                 <input type="checkbox" id="optionSubdividePoints">
-                Show subdivide points
+                Show subdivision points
             </label>
 
             <hr>
@@ -59,22 +63,18 @@
                     <option value="BOUNDING_BOX" selected>Bounding Box</option>
                 </select>
             </label>
-
             <label style="display: flex; align-items: center;">
                 <input type="range" min="1" max="10" value="6" id="optionDepth">
                 Max depth:&nbsp;
                 <output id="optionDepthCurrent"></output>
             </label>
-
             <label style="display: flex; align-items: center;">
                 <input type="range" min="1" max="200" value="5" id="optionMaximumDistance">
                 Maximum Distance:&nbsp;
                 <output id="optionMaximumDistanceCurrent"></output>
             </label>
-
             <button id="buttonClear">Clear</button>
 
-            <p># of segments: <output id="nSegments"></output></p>
         </div>
     </div>
 </body>
