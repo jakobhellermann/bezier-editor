@@ -10,6 +10,7 @@ let optionControlPoints = document.getElementById("optionControlPoints") as HTML
 let optionShowConstruction = document.getElementById("optionShowConstruction") as HTMLInputElement;
 let optionSubdividePoints = document.getElementById("optionSubdividePoints") as HTMLInputElement;
 let optionConstructionParameter = document.getElementById("optionConstructionParameter") as HTMLInputElement;
+let optionBoundingBoxes = document.getElementById("optionBoundingBoxes") as HTMLInputElement;
 let optionConstructionParameterCurrent = document.getElementById("optionConstructionParameterCurrent") as HTMLOutputElement;
 let optionMaximumDistance = document.getElementById("optionMaximumDistance") as HTMLInputElement;
 let optionMaximumDistanceCurrent = document.getElementById("optionMaximumDistanceCurrent") as HTMLOutputElement;
@@ -48,6 +49,7 @@ let options = {
     colorSegments: optionColorSegments.checked,
     controlPoints: optionControlPoints.checked,
     showConstruction: optionShowConstruction.checked,
+    showBoundingBoxes: optionBoundingBoxes.checked,
     constructionParameter: optionConstructionParameter.valueAsNumber,
     showSubdividePoints: optionSubdividePoints.checked,
     maximumDistance: optionMaximumDistance.valueAsNumber,
@@ -79,6 +81,10 @@ optionColorCurves.addEventListener("change", () => {
 });
 optionSubdividePoints.addEventListener("change", () => {
     options.showSubdividePoints = optionSubdividePoints.checked;
+    render();
+});
+optionBoundingBoxes.addEventListener("change", () => {
+    options.showBoundingBoxes = optionBoundingBoxes.checked;
     render();
 });
 optionDepth.addEventListener("input", () => {
@@ -200,7 +206,7 @@ function stopCondition(points: BezierCurve, depth: number): boolean {
         return distance(start, end) < options.maximumDistance;
     } else if (options.stopCondition === StopCondition.BOUNDING_BOX) {
         let bb = boundingBox(points);
-        if (false) drawBox(bb);
+        if (options.showBoundingBoxes) drawBox(bb);
 
         let threshold = options.maximumDistance;
         return bb.w <= threshold && bb.h <= threshold;
