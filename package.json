@@ -11,5 +11,10 @@
   "license": "ISC",
   "devDependencies": {
     "parcel": "^2.10.2"
+  },
+  "targets": {
+    "default": {
+      "publicUrl": "./"
+    }
   }
 }
