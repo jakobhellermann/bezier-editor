@@ -284,6 +284,8 @@ type CurvePointIndex = { curve: number, point: number; };
 let dragging = false;
 let draggingPoint: CurvePointIndex | null = null;
 
+let lastSelectedPoint: CurvePointIndex | null = null;
+
 canvas.addEventListener("mousedown", (event) => {
     if (options.controlPoints) {
         for (let i = 0; i < curves.length; i++) {
@@ -293,6 +295,7 @@ canvas.addEventListener("mousedown", (event) => {
                 if (hovered(point)) {
                     draggingPoint = { curve: i, point: j };
                     dragging = true;
+                    lastSelectedPoint = { curve: i, point: i };
                     return;
                 }
             }
@@ -398,8 +401,14 @@ function canvasClick(event: MouseEvent) {
         return;
     }
 
-    // begin new curve
-    if (event.shiftKey) {
+    lastSelectedPoint = addPoint(event2position(event), event.shiftKey);
+    render();
+}
+
+function addPoint(point: Point, inNewCurve: boolean): CurvePointIndex {
+    if (curves.length === 0) curves.push([]);
+
+    if (inNewCurve) {
         if (curves[curves.length - 1].length > 1) {
             let lastCurve = curves[curves.length - 1];
             let lastPoint = lastCurve[lastCurve.length - 1];
@@ -411,9 +420,10 @@ function canvasClick(event: MouseEvent) {
             curves.push([lastPoint, newControlPoint]);
         }
     }
-    curves[curves.length - 1].push(event2position(event));
+    curves[curves.length - 1].push(point);
 
-    render();
+    return { curve: curves.length - 1, point: curves[curves.length - 1].length - 1 };
+
 }
 
 let distinctColors = ["#191970", "#f064ff", "#ff0000", "#00ff00", "#00ffff", "#ff00ff", "#ffb6c1"];
@@ -455,3 +465,27 @@ function render() {
 }
 
 render();
+
+document.addEventListener("keyup", event => {
+    if (event.key === "Delete") {
+        if (lastSelectedPoint) removePoint(lastSelectedPoint);
+    }
+});
+
+function removePoint(point: CurvePointIndex) {
+    // TODO: remove point at index
+
+    if (curves.length > 0) {
+        let curve = curves[curves.length - 1];
+        if (curve.length > 0) {
+            curve.pop();
+        }
+        // single point doesn't make a lot of sense
+        if (curve.length === 1) curve.pop();
+
+        if (curve.length === 0) {
+            curves.pop();
+        }
+        render();
+    }
+}
