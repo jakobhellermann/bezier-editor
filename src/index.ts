@@ -279,8 +279,10 @@ let event2position = (event: MouseEvent): Point => {
 let hoverPosition: Point | null = null;
 let hovered = (pos: Point) => hoverPosition ? distance(pos, hoverPosition) < 5 : false;;
 
+type CurvePointIndex = { curve: number, point: number; };
+
 let dragging = false;
-let draggingPoint: { curve: number, point: number; } | null = null;
+let draggingPoint: CurvePointIndex | null = null;
 
 canvas.addEventListener("mousedown", (event) => {
     if (options.controlPoints) {
@@ -303,36 +305,88 @@ canvas.addEventListener("mousemove", (event: MouseEvent) => {
     hoverPosition = event2position(event);
 
     if (draggingPoint) {
-        let curve = curves[draggingPoint.curve];
-        let point = curve[draggingPoint.point];
-        point.x = hoverPosition.x;
-        point.y = hoverPosition.y;
-
-        if (options.lockTangents) {
-            if (draggingPoint.point === 1 && draggingPoint.curve > 0) {
-                let prevCurve = curves[draggingPoint.curve - 1];
-                if (prevCurve.length > 2) {
-                    let shared = prevCurve.at(-1)!;
-                    let prevControl = prevCurve.at(-2)!;
-                    let tangent = { x: shared.x - point.x, y: shared.y - point.y };
-                    prevControl.x = shared.x + tangent.x;
-                    prevControl.y = shared.y + tangent.y;
-                }
-            } else if (draggingPoint.point === curve.length - 2 && draggingPoint.curve < curves.length - 1) {
-                let nextCurve = curves[draggingPoint.curve + 1];
-                if (nextCurve.length > 2) {
-                    let shared = nextCurve[0];
-                    let nextControl = nextCurve[1];
-                    let tangent = { x: shared.x - point.x, y: shared.y - point.y };
-                    nextControl.x = shared.x + tangent.x;
-                    nextControl.y = shared.y + tangent.y;
-                }
-            }
-        }
+        moveCurvePoint(draggingPoint, hoverPosition);
     }
 
     render();
 });
+
+function moveCurvePoint(curvePoint: CurvePointIndex, to: Point) {
+    let curve = curves[curvePoint.curve];
+    let point = curve[curvePoint.point];
+
+    let deltaX = to.x - point.x;
+    let deltaY = to.y - point.y;
+
+    point.x = to.x;
+    point.y = to.y;
+
+    // adjust startpoint
+    if (curvePoint.point === 0 && curvePoint.curve > 0) {
+        let prevCurve = curves[curvePoint.curve - 1];
+        let prevLast = prevCurve.at(-1)!;
+        prevLast.x = point.x;
+        prevLast.y = point.y;
+
+        if (curve.length > 2) {
+            let thisControl = curve[1]!;
+            thisControl.x += deltaX;
+            thisControl.y += deltaY;
+        }
+        if (prevCurve.length > 2) {
+            let prevControl = prevCurve.at(-2)!;
+            prevControl.x += deltaX;
+            prevControl.y += deltaY;
+        }
+    }
+    // adjust endpoint
+    else if (curvePoint.point === curve.length - 1 && curvePoint.curve < curves.length - 1) {
+        let nextCurve = curves[curvePoint.curve + 1];
+        let nextFirst = nextCurve[0];
+        if (nextFirst) {
+            nextFirst.x = point.x;
+            nextFirst.y = point.y;
+        }
+
+        if (curve.length > 2) {
+            let thisControl = curve.at(-2)!;
+            thisControl.x += deltaX;
+            thisControl.y += deltaY;
+        }
+
+        if (nextCurve.length > 2) {
+            let nextControl = nextCurve[1];
+            nextControl.x += deltaX;
+            nextControl.y += deltaY;
+        }
+    }
+
+    if (options.lockTangents) {
+        // move first control
+        if (curvePoint.point === 1 && curvePoint.curve > 0) {
+            let prevCurve = curves[curvePoint.curve - 1];
+            if (prevCurve.length > 2) {
+                let shared = prevCurve.at(-1)!;
+                let prevControl = prevCurve.at(-2)!;
+                let tangent = { x: shared.x - point.x, y: shared.y - point.y };
+                prevControl.x = shared.x + tangent.x;
+                prevControl.y = shared.y + tangent.y;
+            }
+        }
+        // move last control
+        else if (curvePoint.point === curve.length - 2 && curvePoint.curve < curves.length - 1) {
+            let nextCurve = curves[curvePoint.curve + 1];
+            if (nextCurve.length > 2) {
+                let shared = nextCurve[0];
+                let nextControl = nextCurve[1];
+                let tangent = { x: shared.x - point.x, y: shared.y - point.y };
+                nextControl.x = shared.x + tangent.x;
+                nextControl.y = shared.y + tangent.y;
+            }
+        }
+    }
+}
+
 canvas.addEventListener("mouseup", (event) => {
     draggingPoint = null;
 });
