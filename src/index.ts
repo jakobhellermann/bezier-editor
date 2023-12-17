@@ -295,7 +295,8 @@ canvas.addEventListener("mousedown", (event) => {
                 if (hovered(point)) {
                     draggingPoint = { curve: i, point: j };
                     dragging = true;
-                    lastSelectedPoint = { curve: i, point: i };
+                    lastSelectedPoint = { curve: i, point: j };
+
                     return;
                 }
             }
@@ -469,23 +470,17 @@ render();
 document.addEventListener("keyup", event => {
     if (event.key === "Delete") {
         if (lastSelectedPoint) removePoint(lastSelectedPoint);
+        lastSelectedPoint = null;
     }
 });
 
-function removePoint(point: CurvePointIndex) {
-    // TODO: remove point at index
+function removePoint(curvePoint: CurvePointIndex) {
+    let curve = curves[curvePoint.curve];
 
-    if (curves.length > 0) {
-        let curve = curves[curves.length - 1];
-        if (curve.length > 0) {
-            curve.pop();
-        }
-        // single point doesn't make a lot of sense
-        if (curve.length === 1) curve.pop();
-
-        if (curve.length === 0) {
-            curves.pop();
-        }
-        render();
+    curve.splice(curvePoint.point, 1);
+    if (curve.length === 0) {
+        curves.splice(curvePoint.curve, 1);
     }
+
+    render();
 }
