@@ -8,7 +8,6 @@ let optionColorCurves = document.getElementById("optionColorCurves") as HTMLInpu
 let optionColorSegments = document.getElementById("optionColorSegments") as HTMLInputElement;
 let optionControlPoints = document.getElementById("optionControlPoints") as HTMLInputElement;
 let optionShowConstruction = document.getElementById("optionShowConstruction") as HTMLInputElement;
-let optionSubdividePoints = document.getElementById("optionSubdividePoints") as HTMLInputElement;
 let optionConstructionParameter = document.getElementById("optionConstructionParameter") as HTMLInputElement;
 let optionBoundingBoxes = document.getElementById("optionBoundingBoxes") as HTMLInputElement;
 let optionConstructionParameterCurrent = document.getElementById("optionConstructionParameterCurrent") as HTMLOutputElement;
@@ -51,7 +50,6 @@ let options = {
     showConstruction: optionShowConstruction.checked,
     showBoundingBoxes: optionBoundingBoxes.checked,
     constructionParameter: optionConstructionParameter.valueAsNumber,
-    showSubdividePoints: optionSubdividePoints.checked,
     maximumDistance: optionMaximumDistance.valueAsNumber,
     stopCondition: optionStopCondition.value,
     lockTangents: optionLockTangents.checked,
@@ -77,10 +75,6 @@ optionControlPoints.addEventListener("change", () => {
 });
 optionColorCurves.addEventListener("change", () => {
     options.colorCurves = optionColorCurves.checked;
-    render();
-});
-optionSubdividePoints.addEventListener("change", () => {
-    options.showSubdividePoints = optionSubdividePoints.checked;
     render();
 });
 optionBoundingBoxes.addEventListener("change", () => {
@@ -221,13 +215,6 @@ let nSegments = 0;
 
 function drawBezierCasteljau(points: BezierCurve, depth = 0) {
     if (points.length <= 1) return;
-
-    if (options.showSubdividePoints) {
-        for (const point of points) {
-            ctx.fillStyle = distinctColors[depth % distinctColors.length];
-            drawPoint(point, 5);
-        }
-    }
 
     if (stopCondition(points, depth)) {
         nSegments += 1;
