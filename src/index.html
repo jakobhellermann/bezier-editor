@@ -18,72 +18,82 @@
             <canvas id="canvas" width="500px" height="500px"></canvas>
             <code># of segments: <output id="nSegments"></output></code>
         </div>
-        <div id="controls">
-            <label>
-                <input type="checkbox" id="optionControlPoints" checked>
-                Show control points
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionLockTangents" checked>
-                Lock tangents
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionShowConstruction">
-                Show construction
-            </label>
-            <br>
-            <label style="display: flex; align-items: center;">
-                <input type="range" min="0" max="1" value="0.5" step="0.01" id="optionConstructionParameter">
-                t:&nbsp;
-                <output id="optionConstructionParameterCurrent"></output>
-            </label>
 
-            <hr>
+        <div id="sidebar">
 
-            <label>
-                <input type="checkbox" id="optionColorCurves">
-                Color curve segments
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionColorSegments">
-                Color subdivision segments
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionSubdividePoints">
-                Show subdivision points
-            </label>
-            <br>
-            <label>
-                <input type="checkbox" id="optionBoundingBoxes">
-                Show bounding boxes
-            </label>
+            <div id="controls">
+                <label>
+                    <input type="checkbox" id="optionControlPoints" checked>
+                    Show control points
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="optionLockTangents" checked>
+                    Lock tangents
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="optionShowConstruction">
+                    Show construction
+                </label>
+                <br>
+                <label style="display: flex; align-items: center;">
+                    <input type="range" min="0" max="1" value="0.5" step="0.01" id="optionConstructionParameter">
+                    t:&nbsp;
+                    <output id="optionConstructionParameterCurrent"></output>
+                </label>
 
-            <hr>
+                <hr>
 
-            <label>
-                Stop Condition
-                <select id="optionStopCondition">
-                    <option value="DEPTH">Max depth</option>
-                    <option value="DISTANCE">Distance</option>
-                    <option value="BOUNDING_BOX" selected>Bounding Box</option>
-                </select>
-            </label>
-            <label style="display: flex; align-items: center;">
-                <input type="range" min="1" max="10" value="6" id="optionDepth">
-                Max depth:&nbsp;
-                <output id="optionDepthCurrent"></output>
-            </label>
-            <label style="display: flex; align-items: center;">
-                <input type="range" min="1" max="200" value="5" id="optionMaximumDistance">
-                Maximum Distance:&nbsp;
-                <output id="optionMaximumDistanceCurrent"></output>
-            </label>
-            <button id="buttonClear">Clear</button>
+                <label>
+                    <input type="checkbox" id="optionColorCurves">
+                    Color curve segments
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="optionColorSegments">
+                    Color subdivision segments
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="optionSubdividePoints">
+                    Show subdivision points
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="optionBoundingBoxes">
+                    Show bounding boxes
+                </label>
 
+                <hr>
+
+                <label>
+                    Stop Condition
+                    <select id="optionStopCondition">
+                        <option value="DEPTH">Max depth</option>
+                        <option value="DISTANCE">Distance</option>
+                        <option value="BOUNDING_BOX" selected>Bounding Box</option>
+                    </select>
+                </label>
+                <label style="display: flex; align-items: center;">
+                    <input type="range" min="1" max="10" value="6" id="optionDepth">
+                    Max depth:&nbsp;
+                    <output id="optionDepthCurrent"></output>
+                </label>
+                <label style="display: flex; align-items: center;">
+                    <input type="range" min="1" max="200" value="5" id="optionMaximumDistance">
+                    Maximum Distance:&nbsp;
+                    <output id="optionMaximumDistanceCurrent"></output>
+                </label>
+                <button id="buttonClear">Clear</button>
+            </div>
+            <p>
+                <b>Controls:</b><br>
+                Click for new point<br>
+                Shift-Click for new curve<br>
+                Drag Control Point to move<br>
+                Click Control Point and press "Entf" to delete<br>
+            </p>
         </div>
     </div>
 </body>
