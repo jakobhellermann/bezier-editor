@@ -11,7 +11,7 @@ Project for an uni course.
 npm run dev
 ```
 
-**Build into `dist`
+**Build into `dist`**
 ```sh
 npm run build
 ```
